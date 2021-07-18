@@ -124,6 +124,12 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 			}
     }
 	USART_ClearITPendingBit(USART1, USART_IT_RXNE);	
+	if(USART_GetFlagStatus(USART1,USART_FLAG_ORE) == SET)
+	{
+		USART_ClearFlag(USART1,USART_FLAG_ORE);
+		USART_ReceiveData(USART1);
+	}
+		
 #if SYSTEM_SUPPORT_OS 	//如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
 	OSIntExit();  											 
 #endif
@@ -171,7 +177,7 @@ u8 UART1_Receive(void)
 			{
 				if(USART_RX_BUF[USART_REC_LEN-1]=='B'&&USART_RX_BUF[USART_REC_LEN-2]=='B')
 				{
-					for (j=0,i=3;USART_RX_BUF[i]!='B';j++,i++)
+					for (j=0,i=3;i<USART_REC_LEN-2;j++,i++)
 					{
 						Con_Info[j]=USART_RX_BUF[i];
 					}

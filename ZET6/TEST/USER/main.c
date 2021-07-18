@@ -1,4 +1,4 @@
-#include<LED.h>
+#include<LED.h>                                                                  
 #include<stm32f10x.h>
 #include<delay.h>
 #include<usart.h>
@@ -60,8 +60,6 @@ int main()
 			LED_1234(Con_Info[14]);
 			Light_Set(Con_Info[13]);
 		}
-		//printf("AA%cBB\r\n",30);
-
 	}
 }
 
