@@ -3,10 +3,11 @@
 #include<MPU6050.h>
 #include<delay.h>
 #include<LED.h>
+#include "MS5837.h"
 #define dir1 (1)
 #define dir2 (-1)
-#define dir3 (-1)
-#define dir4 (1)
+#define dir3 (1)
+#define dir4 (-1)
 #define dir5 (1)
 #define dir6 (-1)
 #define dir7 (-1)
@@ -17,7 +18,7 @@ short standPWM=150;
 
 u8 MAX = 100;
 
-PID_def PID_ROL, PID_PIT;
+PID_def PID_ROL, PID_PIT,PID_DEP;
 Angle_def Angle;
 Angle_def Target;
 
@@ -71,7 +72,7 @@ void Motor3_set(short speed)
 		speed = MAX;
 	if(speed <= (-1)*MAX)
 		speed = (-1)*MAX;
-	TIM_SetCompare3(TIM3,standPWM+dir3*speed);
+	TIM_SetCompare4(TIM3,standPWM+dir3*speed);
 }
 
 void Motor4_set(short speed)
@@ -80,7 +81,7 @@ void Motor4_set(short speed)
 		speed = MAX;
 	if(speed <= (-1)*MAX)
 		speed = (-1)*MAX;
-	TIM_SetCompare4(TIM3,standPWM+dir4*speed);
+	TIM_SetCompare3(TIM3,standPWM+dir4*speed);
 }
 
 void Motor5_set(short speed)
@@ -125,6 +126,10 @@ void Motor_1234(u8 UD,u8 speed_UD,u8 POS,u8 PIT,u8 speed_PIT,u8 ROL,u8 speed_ROL
 	signed char M1y,M2y,M3y,M4y;
 	signed char M1z,M2z,M3z,M4z;
 	short out_M1,out_M2,out_M3,out_M4;
+	if(UD!=0)
+	{
+		Target_DEP = Pressure;
+	}
 	switch (UD){
 		case 0: {M1y=0;M2y=0;M3y=0;M4y=0;break;}
 		case 1: {M1y=1;M2y=1;M3y=1;M4y=1;break;}
@@ -132,13 +137,14 @@ void Motor_1234(u8 UD,u8 speed_UD,u8 POS,u8 PIT,u8 speed_PIT,u8 ROL,u8 speed_ROL
 	}
 	switch (PIT){
 		case 0: {M1z=0;M2z=0;M3z=0;M4z=0;break;}
-		case 1: {M1z=1;M2z=1;M3z=(signed char)(-1);M4z=(signed char)(-1);break;}
-		case 2: {M1z=(signed char)(-1);M2z=(signed char)(-1);M3z=1;M4z=1;break;}
+		case 1: {M1z=(signed char)(-1);M2z=1;M3z=1;M4z=(signed char)(-1);break;}
+		case 2: {M1z=1;M2z=(signed char)(-1);M3z=(signed char)(-1);M4z=1;break;}
+
 	}
 	switch (ROL){
 		case 0: {M1x=0;M2x=0;M3x=0;M4x=0;break;}
-		case 1: {M1x=1;M2x=(signed char)(-1);M3x=(signed char)(-1);M4x=1;break;}
-		case 2: {M1x=(signed char)(-1);M2x=1;M3x=1;M4x=(signed char)(-1);break;}
+		case 1: {M1x=(signed char)(-1);M2x=(signed char)(-1);M3x=1;M4x=1;break;}
+		case 2: {M1x=1;M2x=1;M3x=(signed char)(-1);M4x=(signed char)(-1);break;}
 	}
 	out_M1 = M1y*speed_UD+M1z*speed_PIT+M1x*speed_ROL;
 	out_M2 = M2y*speed_UD+M2z*speed_PIT+M2x*speed_ROL;
@@ -189,9 +195,9 @@ void Motor_5678(u8 FB, u8 speed1, u8 LR, u8 speed2,u8 SH, u8 speed3)//1前进2后退
 void PID_Init()
 {
 	//ROLL
-	PID_ROL.P=1.6;
+	PID_ROL.P=0.6;
 	PID_ROL.I=0;
-	PID_ROL.D=0;
+	PID_ROL.D=0.1;
 	PID_ROL.Ek=0;
 	PID_ROL.preEk=0;
 	PID_ROL.P_out=0;
@@ -200,9 +206,9 @@ void PID_Init()
 	PID_ROL.OUT=0;
 	PID_ROL.I_limit = 0;
 	//PITCH
-	PID_PIT.P=1.2;
+	PID_PIT.P=0.4;
 	PID_PIT.I=0;
-	PID_PIT.D=0;
+	PID_PIT.D=0.05;
 	PID_PIT.Ek=0;
 	PID_PIT.preEk=0;
 	PID_PIT.P_out=0;
@@ -210,6 +216,39 @@ void PID_Init()
 	PID_PIT.D_out=0;
 	PID_PIT.OUT=0;
 	PID_PIT.I_limit = 0;
+	
+//	PID_ROL.P=0.75;
+//	PID_ROL.I=0;
+//	PID_ROL.D=0;
+//	PID_ROL.Ek=0;
+//	PID_ROL.preEk=0;
+//	PID_ROL.P_out=0;
+//	PID_ROL.I_out=0;
+//	PID_ROL.D_out=0;
+//	PID_ROL.OUT=0;
+//	PID_ROL.I_limit = 0;
+//	//PITCH
+//	PID_PIT.P=0.55;
+//	PID_PIT.I=0;
+//	PID_PIT.D=0;
+//	PID_PIT.Ek=0;
+//	PID_PIT.preEk=0;
+//	PID_PIT.P_out=0;
+//	PID_PIT.I_out=0;
+//	PID_PIT.D_out=0;
+//	PID_PIT.OUT=0;
+//	PID_PIT.I_limit = 0;
+	
+	PID_DEP.P=2.5;
+	PID_DEP.I=0.02;
+	PID_DEP.D=1.2;
+	PID_DEP.Ek=0;
+	PID_DEP.preEk=0;
+	PID_DEP.P_out=0;
+	PID_DEP.I_out=0;
+	PID_DEP.D_out=0;
+	PID_DEP.OUT=0;
+	PID_DEP.I_limit = 12;
 	
 	
 	Target.pitch = 0;
@@ -224,67 +263,13 @@ void getMxMi(float* moto)
 }
 
 
-//void PID_Calc(float roll, float pitch, u8* pidcal20ms)
-//{
-//	float dk1,dk2;
-//	float t1=0,t2=0,t3=0;
-//	float t1max = 25;
-//	if((*pidcal20ms*20)<T) return ;
-//	
-//	
-//	//ROLL
-//	PID_ROL.Ek = 0 - roll;
-//	dk1=PID_ROL.Ek-PID_ROL.Ek_1;
-//	dk2=PID_ROL.Ek-2*PID_ROL.Ek_1-PID_ROL.Ek_2;
-////	t1 = PID_ROL.Ek*PID_ROL.Kp*T/PID_ROL.Ti;//积分项
-////	t2 = dk2*PID_ROL.Kp*PID_ROL.Td/T;		//微分项
-//	t3 = dk1*PID_ROL.Kp;					//比例项
-//	if(t1>=t1max){
-//		t1 = t1max;
-//	}
-//	if(t1<=(-1)*t1max){
-//		t1 = (-1)*t1max;
-//	}
-//	PID_ROL.DOUT =t1+t2+t3;
-//	PID_ROL.Ek_2=PID_ROL.Ek_1;
-//	PID_ROL.Ek_1=PID_ROL.Ek;
-//	
-//	//PITCH
-//	PID_PIT.Ek = 0 - pitch;
-//	dk1=PID_PIT.Ek-PID_PIT.Ek_1;
-//	dk2=PID_PIT.Ek-2*PID_PIT.Ek_1-PID_PIT.Ek_2;
-////	t1 = PID_PIT.Ek*PID_PIT.Kp*T/PID_PIT.Ti;
-////	t2 = dk2*PID_PIT.Kp*PID_PIT.Td/T;
-//	t3 = dk1*PID_PIT.Kp;						
-//	if(t1>=t1max){
-//		t1 = t1max;
-//	}
-//	if(t1<=(-1)*t1max){
-//		t1 = (-1)*t1max;
-//	}
-//	PID_PIT.DOUT =t1+t2+t3;
-//	PID_PIT.Ek_2=PID_PIT.Ek_1;
-//	PID_PIT.Ek_1=PID_PIT.Ek;
-//	
-//	
-//	moto1 =  moto1- PID_ROL.DOUT + PID_PIT.DOUT;
-//	moto2 =  moto2+ PID_ROL.DOUT + PID_PIT.DOUT;
-//	moto3 =  moto3+ PID_ROL.DOUT - PID_PIT.DOUT;
-//	moto4 =  moto4- PID_ROL.DOUT - PID_PIT.DOUT;
-//	getMxMi(&moto1);
-//	getMxMi(&moto2);
-//	getMxMi(&moto3);
-//	getMxMi(&moto4);
-//	
-//    //if (1) Motor_1234(moto1, moto2, moto3, moto4);
-//	*pidcal20ms=0;
-//}
-
 
 
 void PID_Calc( PID_def* PID, float target, float angle)
 {
 	float Imax;
+	
+	Imax = PID->I_limit;
 	PID->Ek = target - angle;
 	
 	PID->P_out = PID->P * PID->Ek;
@@ -304,15 +289,16 @@ void PID_Calc( PID_def* PID, float target, float angle)
 	
 	PID->preEk = PID->Ek;
 }
-
+int32_t Target_DEP;
 void PID_Control()
 {
 	PID_Calc(&PID_PIT,Target.pitch,Angle.pitch);
 	PID_Calc(&PID_ROL,Target.roll,Angle.roll);
-	moto1 =  - PID_ROL.OUT + PID_PIT.OUT;
-	moto2 =  + PID_ROL.OUT + PID_PIT.OUT;
-	moto3 =  + PID_ROL.OUT - PID_PIT.OUT;
-	moto4 =  - PID_ROL.OUT - PID_PIT.OUT;
+	PID_Calc(&PID_DEP,Target_DEP,Pressure);
+	moto1 =  - PID_ROL.OUT + PID_PIT.OUT - PID_DEP.OUT;
+	moto2 =  - PID_ROL.OUT - PID_PIT.OUT - PID_DEP.OUT;
+	moto3 =  + PID_ROL.OUT - PID_PIT.OUT - PID_DEP.OUT;
+	moto4 =  + PID_ROL.OUT + PID_PIT.OUT - PID_DEP.OUT;
 }
 
 void LED_1234(u8 ctr8)

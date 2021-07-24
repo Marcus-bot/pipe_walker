@@ -5,7 +5,7 @@
 // typedef struct PID{float Kp,Ti,Td,DOUT,OUT,Ek,Ek_1,Ek_2;}PID;
 typedef struct PID_typedef{float P,I,D,P_out,I_out,D_out,OUT,Ek,preEk,I_limit;}PID_def;
 typedef struct Angle_typedef{float pitch,roll,yaw;}Angle_def;
-
+extern int32_t Target_DEP;
 void Motor_Init(void);
 void Motor1_set(short speed);
 void Motor2_set(short speed);

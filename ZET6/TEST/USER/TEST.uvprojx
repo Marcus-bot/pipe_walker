@@ -621,6 +621,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>MS5837</GroupName>
+          <Files>
+            <File>
+              <FileName>MS5837.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MS5837\MS5837.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>

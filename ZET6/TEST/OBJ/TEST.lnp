@@ -39,6 +39,7 @@
 "..\obj\mpu6050.o"
 "..\obj\timer.o"
 "..\obj\control.o"
+"..\obj\ms5837.o"
 --strict --scatter "..\OBJ\TEST.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -34,3 +34,7 @@
 ..\obj\control.o: ..\MPU6050\MPU6050.h
 ..\obj\control.o: ..\SYSTEM\delay\delay.h
 ..\obj\control.o: ..\LED\LED.h
+..\obj\control.o: ..\MS5837\MS5837.h
+..\obj\control.o: ..\SYSTEM\usart\usart.h
+..\obj\control.o: E:\STM32_software\MDK5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\control.o: ..\IIC\myiic.h

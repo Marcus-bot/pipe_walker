@@ -20,8 +20,6 @@ double T2;
 //#define IIC_Init IIC3_Init
 
 
-
-
 void MS5837_30BA_ReSet(void)
 {
 		IIC_Start();
@@ -108,23 +106,28 @@ void MS5837_30BA_GetData(void)
 	delay_ms(20);
 	D1_Pres= MS5837_30BA_GetConversion(MS5837_30BA_D1_OSR_8192);
 	delay_ms(20);
-	dT=D2_Temp - (((uint32_t)Cal_C[5])*256);
-	SENS=(int64_t)Cal_C[1]*65536l+((int64_t)Cal_C[3]*dT)/128;
-	OFF_=(int64_t)Cal_C[2]*131072l+((int64_t)Cal_C[4]*dT)/64;
-	TEMP = 2000+(int64_t)(dT)*Cal_C[6]/8388608LL;
+	dT=D2_Temp - (((uint32_t)Cal_C[5])*256l);
+	SENS=(int64_t)Cal_C[1]*32768l+((int64_t)Cal_C[3]*dT)/256l;
+	OFF_=(int64_t)Cal_C[2]*65536l+((int64_t)Cal_C[4]*dT)/128l;
+	TEMP = 2000l+(int64_t)(dT)*Cal_C[6]/8388608LL;
 	
-	if(TEMP<2000)  
+//二阶温度补偿
+	if(TEMP<2000)  // low temp
 	{
-		Ti = (11*(int64_t)(dT)*(int64_t)(dT)/(34359738368LL));
-		OFFi = (31*(TEMP-2000)*(TEMP-2000))/8;
-		SENSi = (63*(TEMP-2000)*(TEMP-2000))/32;
+		Ti = (3*(int64_t)(dT)*(int64_t)(dT)/(8589934592LL));
+		OFFi = (3*(TEMP-2000)*(TEMP-2000))/2;
+		SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
 	}
+	 else{         // high temp
+	  Ti = 2*(dT*dT)/(137438953472LL);
+		OFFi = (1*(TEMP-2000)*(TEMP-2000))/16;
+		SENSi = 0;
+	 }
   OFF2 = OFF_-OFFi;           
 	SENS2 = SENS-SENSi;
-  Pressure=((D1_Pres*SENS2)/2097152l-OFF2)/32768/100;          //校准后压力数据
+  Pressure=((D1_Pres*SENS2)/2097152l-OFF2)/8192l/10;          //校准后压力数据
   Temperature=(TEMP-Ti)/100.0;                                //校准后温度数据  
 }
-
 unsigned char MS5837_30BA_Crc4()
 {
 	int cnt;

@@ -39,3 +39,4 @@
 ..\obj\main.o: ..\TIMER\timer.h
 ..\obj\main.o: ..\IIC\myiic.h
 ..\obj\main.o: ..\CONTROL\control.h
+..\obj\main.o: ..\MS5837\MS5837.h
