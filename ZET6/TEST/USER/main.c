@@ -37,9 +37,9 @@ int main()
 	LED_ctl();								////四色信号灯初始化	
 	Motor_Init();		
 	PID_Init();
-	MS5837_Init();
-	MS5837_30BA_GetData();
-	Target_DEP = Pressure;
+//	MS5837_Init();
+//	MS5837_30BA_GetData();
+//	Target_DEP = Pressure;
 	myTIMER5_Init(1999,719);
 	myTIMER4_Init(1999,719);
 	uart_init(921600);						//串口1（树莓派）
@@ -51,7 +51,7 @@ int main()
 	while(1)
 	{
 		//delay_ms(1);
-		MS5837_30BA_GetData();
+//		MS5837_30BA_GetData();
 		mpu_dmp_get_data(&(Angle.pitch),&(Angle.roll),&(Angle.yaw));
 		UART1_Receive();
 		

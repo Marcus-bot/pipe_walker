@@ -294,7 +294,7 @@ void PID_Control()
 {
 	PID_Calc(&PID_PIT,Target.pitch,Angle.pitch);
 	PID_Calc(&PID_ROL,Target.roll,Angle.roll);
-	PID_Calc(&PID_DEP,Target_DEP,Pressure);
+//	PID_Calc(&PID_DEP,Target_DEP,Pressure);
 	moto1 =  - PID_ROL.OUT + PID_PIT.OUT - PID_DEP.OUT;
 	moto2 =  - PID_ROL.OUT - PID_PIT.OUT - PID_DEP.OUT;
 	moto3 =  + PID_ROL.OUT - PID_PIT.OUT - PID_DEP.OUT;
